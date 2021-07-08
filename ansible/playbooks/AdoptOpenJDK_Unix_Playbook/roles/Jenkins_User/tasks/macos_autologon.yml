@@ -1,0 +1,67 @@
+# To run UI tests on macOS, macOS' UI server needs to be running. The UI
+# server is only active after a user has logged into their account and cannot
+# be started on demand like Xvfb. The only option is to enable auto logon for
+# the user running the tests which is "jenkins" in our case. Xvfb cannot be
+# used because macOS uses Quartz to render its UI, not X.
+#
+# The security implications of enabling auto logon are as follows:
+#
+# * Anybody with physical access does not have to authenticate to perform actions
+#   as "jenkins" (only if macOS is running on a physical machine).
+# * Any kind of remote login (screen sharing, SSH) needs the same authentication
+#   as usual (except it was disabled separately, of course).
+#
+# If you want to minimize the security risks associated with auto logon,
+# run the unlocked macOS in a Parallels VM (other types of VM might support
+# this, too) and configure Parallels to automatically open a window when the
+# VM starts. Then, the host machine can remain locked all the time an protect
+# the VMs from direct physical access.
+#
+# Apart from running the playbook, some manual configuration is needed: In
+# "System Preferences", go to "Security" > "Privacy" and click on
+# "Accessibility". Add whatever program runs the UI test (at AdoptOpenJDK, it's
+# "sshd-keygen-wrapper") and allow it to control the computer.
+---
+- name: Disable Screen Saver
+  osx_defaults:
+    domain: com.apple.screensaver
+    key: idleTime
+    type: int
+    value: 0
+    host: "currentHost"
+    state: present
+
+- name: Disable Screen Lock
+  shell: sysadminctl -screenLock off -password {{ ansible_become_pass }}
+  changed_when: false
+
+- name: Enable Automatic Login after Startup
+  become: true
+  osx_defaults:
+    domain: /Library/Preferences/com.apple.loginwindow
+    key: autoLoginUser
+    type: string
+    value: "{{ Jenkins_Username }}"
+    state: present
+
+- name: Query Computer Sleep Status
+  shell: systemsetup -getcomputersleep
+  register: computer_sleep_status_result
+  changed_when: false
+  become: true
+
+- name: Disable Computer Sleep
+  shell: systemsetup -setcomputersleep Never
+  when: "'Never' not in computer_sleep_status_result.stdout"
+  become: true
+
+- name: Query Display Sleep Status
+  shell: systemsetup -getdisplaysleep
+  register: display_sleep_status_result
+  changed_when: false
+  become: true
+
+- name: Disable Display Sleep
+  shell: systemsetup -setdisplaysleep Never
+  when: "'Never' not in display_sleep_status_result.stdout"
+  become: true

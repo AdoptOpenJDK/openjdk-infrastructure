@@ -115,3 +115,10 @@
     - ansible_distribution_major_version == "6" or ansible_distribution_major_version == "7"
   tags:
     - jenkins_user
+
+- name: Enable auto logon for test machines (macOS)
+  include_tasks: macos_autologon.yml
+  when: "ansible_distribution == 'MacOSX' and 'test' in group_names" # limit to macOS test machines
+  tags:
+    - jenkins_user
+    - adoptopenjdk
