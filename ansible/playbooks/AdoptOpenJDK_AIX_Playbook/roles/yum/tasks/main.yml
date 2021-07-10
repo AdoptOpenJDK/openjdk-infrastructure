@@ -145,13 +145,6 @@
     - yum
     - cmake
 
-- name: Ensure perl from /opt/freeware/bin is the default in /usr/bin
-  shell: mv /usr/bin/perl /usr/bin/perl.old && ln -s /opt/freeware/bin/perl /usr/bin/
-  ignore_errors: True
-  tags:
-    - rpm_install
-    - yum
-
 # Create zlib.h and zconf.h links - See https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/1952
 
 - name: Checking for /opt/freeware/include/zlib.h
