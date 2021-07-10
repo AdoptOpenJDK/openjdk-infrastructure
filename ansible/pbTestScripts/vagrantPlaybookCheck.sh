@@ -16,6 +16,7 @@ fastMode=false
 skipFullSetup=''
 jdkToBuild=''
 buildHotspot=''
+buildBisheng=''
 testDocker=false
 scriptPath=$(realpath $0)
 
@@ -56,6 +57,8 @@ processArgs()
 				buildBranch="--branch $1"; shift;;
 			"--build-hotspot" )
 				buildHotspot="--hotspot";;
+			"--build-bisheng" )
+				buildBisheng="--bisheng";;
 			"--test-docker" )
 				testDocker=true;;
 			"--help" | "-h" )
@@ -76,6 +79,7 @@ usage()
   --build-fork | -bf             Specify the fork of openjdk-build to build from (Default: adoptopenjdk)
   --build-branch | -bb           Specify the branch of the fork to build from (Default: master)
   --build-hotspot                Build the JDK with Hotspot (Default: OpenJ9)
+  --build-bisheng                Build the JDK with Bisheng (Default: OpenJ9)
   --clean-workspace | -c         Remove the old work folder if detected
   --fork | -f                    Specify the fork of openjdk-infrastructure to run the playbook from (Default: adoptopenjdk)
   --branch | -br                 Specify the branch of the infrastructure fork (Default: master)
@@ -252,8 +256,7 @@ startVMPlaybook()
 
 	if [[ "$testNativeBuild" = true ]]; then
 		local buildLogPath="$WORKSPACE/adoptopenjdkPBTests/logFiles/${gitFork}.${gitBranch}.$OS.build_log"
-
-		ssh -p ${vagrantPORT} $ssh_args -i $PWD/id_rsa vagrant@127.0.0.1 "cd /vagrant/pbTestScripts && bash buildJDK.sh $buildBranch $buildFork $jdkToBuild $buildHotspot" 2>&1 | tee $buildLogPath
+    ssh -p ${vagrantPORT} $ssh_args -i $PWD/id_rsa vagrant@127.0.0.1 "cd /vagrant/pbTestScripts && bash buildJDK.sh $buildBranch $buildFork $jdkToBuild $buildHotspot $buildBisheng" 2>&1 | tee $buildLogPath
 		echo The build finished at : `date +%T`
 		if grep -q '] Error' $buildLogPath || grep -q 'configure: error' $buildLogPath; then
 			echo BUILD FAILED

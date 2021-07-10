@@ -124,10 +124,15 @@ defaultVars() {
 		exit 1;
 	fi
 	if [[ "$buildJDK" == true && "$ARCHITECTURE" == "RISCV" ]]; then
-		echo "Currently unable to build a JDK on RISC-V natively"
-		echo "Skipping build/test"
-		buildJDK=false
-		testJDK=false
+		if [ "$buildVariant" = "hotspot" ]; then
+			echo "Cannot build the main hotspot directly on RISC-V so selecting Bisheng variant"
+			buildVariant=bisheng
+		else
+			echo "Currently unable to build a JDK on RISC-V natively"
+			echo "Skipping build/test"
+			buildJDK=false
+			testJDK=false
+		fi
 	fi
 
 }
