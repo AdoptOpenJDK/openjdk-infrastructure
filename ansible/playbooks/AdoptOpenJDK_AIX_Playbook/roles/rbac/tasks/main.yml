@@ -34,7 +34,7 @@
 # Tested with bash already installed from AIXToolbox
 - name: Add authorization to shell
   shell:
-    setsecattr -c accessauths=ojdk.rtclk innateprivs=PV_PROC_RTCLK inheritprivs=PV_PROC_RTCLK secflags=FSF_EPS "{{ item }}"
+    setsecattr -c accessauths=ojdk.rtclk innateprivs=PV_PROC_RTCLK,PV_PROC_CORE inheritprivs=PV_PROC_RTCLK,PV_PROC_CORE secflags=FSF_EPS "{{ item }}"
   with_items:
     - /usr/bin/ksh
     - /opt/freeware/bin/bash_32
