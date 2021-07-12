@@ -49,4 +49,6 @@
   win_reboot:
     reboot_timeout: 1800
   when: (not cygwin_installed.stat.exists)
-  tags: cygwin
+  tags:
+    - cygwin
+    - reboot

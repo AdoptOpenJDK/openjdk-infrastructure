@@ -5,7 +5,7 @@
 
 - name: Test if VS 2019 is installed
   win_stat:
-    path: 'C:\Program Files (x86)\Microsoft Visual Studio\2019'
+    path: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community'
   register: vs2019_installed
   tags: MSVS_2019
 
@@ -48,4 +48,6 @@
     reboot_timeout: 1800
     shutdown_timeout: 1800
   when: (not vs2019_installed.stat.exists)
-  tags: MSVS_2019
+  tags:
+    - MSVS_2019
+    - reboot

@@ -5,7 +5,7 @@
 
 - name: Test if VS 2017 is installed
   win_stat:
-    path: 'C:\Program Files (x86)\Microsoft Visual Studio\2017'
+    path: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community'
   register: vs2017_installed
   tags: MSVS_2017
 
@@ -41,4 +41,6 @@
     reboot_timeout: 1800
     shutdown_timeout: 1800
   when: (not vs2017_installed.stat.exists)
-  tags: MSVS_2017
+  tags:
+    - MSVS_2017
+    - reboot

@@ -35,4 +35,6 @@
     reboot_timeout: 1800
     shutdown_timeout: 1800
   when: (not vs2013_installed.stat.exists)
-  tags: MSVS_2013
+  tags:
+    - MSVS_2013
+    - reboot
