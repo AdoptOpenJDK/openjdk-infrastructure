@@ -13,6 +13,9 @@ hosts:
       - aws:
           ubuntu1804-x64-1: {ip: 54.78.186.5, user: ubuntu, description: trss.adoptopenjdk.net}
 
+      - azure:
+          ubuntu2004-x64-1: {ip: 40.121.206.1, user: webmaster, description: jckservices.adoptium.net}
+
       - digitalocean:
           ubuntu2004-x64-1: {ip: 178.62.115.224, description: bastillion.adoptopenjdk.net}
 

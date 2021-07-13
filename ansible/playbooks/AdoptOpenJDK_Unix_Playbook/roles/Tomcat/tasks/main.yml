@@ -1,0 +1,20 @@
+---
+################
+# Tomcat Setup #
+################
+- name: Install tomcat9
+  apt: pkg=tomcat9 state=latest
+  tags: dependencies
+
+- name: Copy index.html
+  copy:
+    src: files/index.html
+    dest: /var/lib/tomcat9/webapps/ROOT/index.html
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Start tomcat9 service
+  service:
+    name: tomcat9
+    state: started

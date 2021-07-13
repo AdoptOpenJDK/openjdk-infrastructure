@@ -58,7 +58,7 @@ jobs:
         ansible-playbook playbooks/AdoptOpenJDK_Unix_Playbook/trss.yml --syntax-check
         ansible-playbook playbooks/AdoptOpenJDK_AIX_Playbook/main.yml --syntax-check
         ansible-playbook playbooks/AdoptOpenJDK_Windows_Playbook/main.yml --syntax-check
-        ansible-playbook playbooks/AdoptOpenJDK_Services_Playbooks/ubuntu-jckservices.yml --syntax-check
+        ansible-playbook playbooks/AdoptOpenJDK_Unix_Playbook/ubuntu-jckservices.yml --syntax-check
         ansible-playbook playbooks/AdoptOpenJDK_ITW_Playbook/main.yml --syntax-check
         ansible-playbook playbooks/vagrant.yml --syntax-check
         ansible-playbook playbooks/ubuntu-jck.yml --syntax-check

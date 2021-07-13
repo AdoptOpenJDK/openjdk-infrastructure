@@ -1,0 +1,88 @@
+---
+########################
+# jckservices iptables #
+########################
+- name: Install iptables-persistent
+  apt: pkg=iptables-persistent state=latest
+  tags:
+    - skip_ansible_lint
+
+- name: Setup iptables
+  iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+
+- name: Setup iptables
+  iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+
+- name: Setup iptables
+  iptables:
+    chain: INPUT
+    protocol: icmp
+    jump: ACCEPT
+
+- name: Setup iptables allow 22
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 22
+    jump: ACCEPT
+
+- name: Setup iptables allow 53
+  iptables:
+    chain: INPUT
+    protocol: udp
+    destination_port: 53
+    jump: ACCEPT
+
+- name: Setup iptables allow 80
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 80
+    jump: ACCEPT
+
+- name: Forward port 80 to 8080
+  iptables:
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    destination_port: 80
+    jump: REDIRECT
+    to_ports: 8080
+
+- name: Setup iptables to only allow JCK hosts
+  iptables:
+    chain: INPUT
+    source: "{{ item }}"
+    jump: ACCEPT
+  with_items:
+    # List comes from https://github.com/temurin-compliance/infrastructure/blob/master/ansible/inventory.yml
+    - 148.100.84.95 # jck-marist-ubuntu2004-s390x-1
+    - 148.100.84.175 # jck-marist-ubuntu2004-s390x-2
+    - 147.75.83.133 # jck-packet-ubuntu2004-x64-1
+    - 129.33.196.193 # jck-ibm-aix71-ppc64-1
+    - 129.33.196.194 # jck-ibm-aix71-ppc64-2
+    - 52.255.173.94 # build-p0smh-win2019-x64
+    - 52.179.7.91 # build-x0vrb-win2019-x64
+    - 208.52.168.211 # iywk3-macos11-temurin-compliance
+    - 207.254.73.168 # gn324-macos11-temurin-compliance
+    - 140.211.168.163 # jck-ubuntu2004-ppc64le-1
+    - 140.211.168.2 # jck-ubuntu2004-ppc64le-2
+    - 213.146.141.66 # jck-linaru-ubuntu2004-aarch64-2
+    - 20.61.136.211 # jck-skytap-aix71-ppc64-1
+    - 20.61.136.213 # jck-skytap-aix71-ppc64-2
+    - 12.202.69.3 # jck-siteox-solaris10u11-sparcv9-1
+    - 147.75.85.211 # jck-equinix_esxi-solaris10u11-x64-1
+    - 147.75.85.214 # jck-equinix_esxi-solaris10u11-x64-2
+
+- name: Setup iptables
+  iptables:
+    chain: INPUT
+    jump: REJECT
+
+- name: iptables_permanent
+  shell: iptables-save > /etc/iptables/rules.v4

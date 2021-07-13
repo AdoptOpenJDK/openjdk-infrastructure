@@ -1,0 +1,49 @@
+---
+#################
+# VSFTPD Server #
+#################
+- name: Install vsftpd
+  apt: pkg=vsftpd state=latest
+  tags: dependencies
+
+- name: Add Shell /sbin/nologin
+  command: add-shell /sbin/nologin
+
+- name: Create FTP user with password
+  action: user name="{{ jckftp_Username }}" home="/home/{{ jckftp_Username }}" shell=/sbin/nologin password="{{ jckftp_Passwd | password_hash('sha512') }}" state=present
+
+- name: Create symlink to /etc/securetty
+  file:
+    src: /usr/share/doc/util-linux/examples/securetty
+    dest: /etc/securetty
+    state: link
+
+- name: "Create /home/{{ jckftp_Username }}/ftp"
+  file:
+    path: "/home/{{ jckftp_Username }}/ftp"
+    owner: "{{ jckftp_Username }}"
+    group: "{{ jckftp_Username }}"
+    state: directory
+
+- name: Create file for FTP access
+  copy:
+    content: "foo"
+    dest: "/home/{{ jckftp_Username }}/ftp/filename.txt"
+    force: no
+    owner: "{{ jckftp_Username }}"
+    group: "{{ jckftp_Username }}"
+    mode: 0755
+
+- name: Copy vsftpd.conf
+  copy:
+    src: conf/vsftpd.conf
+    dest: /etc/vsftpd.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+- name: Restart vsftpd service
+  service:
+    name: vsftpd
+    state: restarted
